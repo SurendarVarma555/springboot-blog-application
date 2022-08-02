@@ -6,6 +6,7 @@ import com.springboot.blog.playload.PostDto;
 import com.springboot.blog.playload.PostResponse;
 import com.springboot.blog.repository.PostRepository;
 import com.springboot.blog.service.PostService;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -20,6 +21,9 @@ import java.util.stream.Collectors;
 public class PostServiceImpl implements PostService {
     @Autowired
     private PostRepository repository;
+/*Mapper is used to map one object into other object automatically*/
+    @Autowired
+    private ModelMapper mapper;
 
     @Override
     public PostDto createPost(PostDto postDto) {
@@ -89,23 +93,25 @@ public class PostServiceImpl implements PostService {
         repository.deleteById(id);
     }
 
-    //convert post entity to post DTO obj
+    //convert post entity to post DTO obj using ModelMapper
     private PostDto mapToDTO(Post post) {
-        PostDto postDto = new PostDto();
-        postDto.setId(post.getId());
-        postDto.setDescription(post.getDescription());
-        postDto.setTitle(post.getTitle());
-        postDto.setContent(post.getContent());
+        PostDto postDto = mapper.map(post,PostDto.class);
+//        PostDto postDto = new PostDto();
+//        postDto.setId(post.getId());
+//        postDto.setDescription(post.getDescription());
+//        postDto.setTitle(post.getTitle());
+//        postDto.setContent(post.getContent());
         return postDto;
     }
 
-    // convert DTo to entity
+    // convert DTo to entity using ModelMapper
     private Post mapToEntity(PostDto postDto) {
-        Post post = new Post();
-        post.setId(postDto.getId());
-        post.setTitle(postDto.getTitle());
-        post.setDescription(postDto.getDescription());
-        post.setContent(postDto.getContent());
+        Post post = mapper.map(postDto,Post.class);
+//        Post post = new Post();
+//        post.setId(postDto.getId());
+//        post.setTitle(postDto.getTitle());
+//        post.setDescription(postDto.getDescription());
+//        post.setContent(postDto.getContent());
         return post;
     }
 }

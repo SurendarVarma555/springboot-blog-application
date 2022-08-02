@@ -35,7 +35,7 @@ public class PostController {
         return service.getAllPosts(pageNo, pageSize, sortBy, sortDir);
     }
 
-    //get All posts rest api
+    //get Post by using Id
     @GetMapping("/{id}")
     public ResponseEntity<PostDto> getPostById(@PathVariable(name = "id") Long id) {
         return ResponseEntity.ok(service.getPostById(id));
