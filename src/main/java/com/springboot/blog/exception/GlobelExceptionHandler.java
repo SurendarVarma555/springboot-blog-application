@@ -1,13 +1,19 @@
 package com.springboot.blog.exception;
 
 import com.springboot.blog.playload.ErrorDetails;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /*GlobalExceptionHandler class
   @ControllerAdvice to handle exceptions globally
@@ -16,7 +22,7 @@ import java.util.Date;
 
 
 @ControllerAdvice
-public class GlobelExceptionHandler {
+public class GlobelExceptionHandler extends ResponseEntityExceptionHandler {
 
     //Handling Specific exceptions
     @ExceptionHandler(ResourceNotFoundException.class)
@@ -42,7 +48,21 @@ public class GlobelExceptionHandler {
         return new ResponseEntity<>(errorDetails, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-   /*  Global Exception Response for below get api
+    @Override
+    protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
+                                                                  HttpHeaders headers,
+                                                                  HttpStatus status,
+                                                                  WebRequest request) {
+        Map<String, String> errors = new HashMap<>();
+        ex.getBindingResult().getAllErrors().forEach((error) -> {
+            String fieldName = ((FieldError) error).getField();
+            String message = error.getDefaultMessage();
+            errors.put(fieldName, message);
+        });
+        return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
+    }
+
+    /*  Global Exception Response for below get api
        http://localhost:8085/api/posts/"10"
     {
         "timeStamp": "2022-08-02T10:38:48.137+00:00",
